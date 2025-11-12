@@ -33,8 +33,12 @@ dependencies {
   testImplementation("org.projectlombok:lombok:1.18.42")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 
-  implementation("org.json:json:20250517")
-  implementation("commons-io:commons-io:2.21.0")
+  implementation("org.apache.commons:commons-configuration2:2.12.0")
+  implementation("commons-beanutils:commons-beanutils:1.11.0")
+
+  implementation("io.grpc:grpc-stub:1.76.0")
+  implementation("io.grpc:grpc-protobuf:1.76.0")
+  implementation("io.grpc:grpc-netty:1.76.0")
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 }
