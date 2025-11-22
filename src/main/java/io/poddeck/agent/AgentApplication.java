@@ -23,6 +23,7 @@ public class AgentApplication {
       client.connect();
       log.info("Successfully connected to core");
       log.info("Successfully booted PodDeck - Agent");
+      client.awaitTermination();
     } catch (Exception exception) {
       log.processError(exception);
     }
