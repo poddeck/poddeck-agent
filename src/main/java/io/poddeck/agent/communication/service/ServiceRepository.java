@@ -54,8 +54,20 @@ public final class ServiceRepository {
         }
         var unpacked = payload.unpack(messageClass);
         var service = services.get(messageClass);
-        ((Service<Message>) service).process(client, requestId, unpacked);
+        new Thread(() -> callService((Service<Message>) service, client,
+          requestId, unpacked)).start();
       }
+    } catch (Exception exception) {
+      log.processError(exception);
+    }
+  }
+
+  private void callService(
+    Service<Message> service, CommunicationClient client, String requestId,
+    Message message
+  ) {
+    try {
+      service.process(client, requestId, message);
     } catch (Exception exception) {
       log.processError(exception);
     }
