@@ -2,7 +2,8 @@ package io.poddeck.agent.communication;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.protobuf.*;
+import com.google.protobuf.Any;
+import com.google.protobuf.Message;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -14,7 +15,6 @@ import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -39,7 +39,7 @@ public final class CommunicationClient {
       var stub = TunnelServiceGrpc.newStub(channel);
       stream = stub.connect(TunnelService.create(log, this, serviceRepository));
       var handshake = HandshakeRequest.newBuilder()
-        .setCluster(UUID.randomUUID().toString())
+        .setCluster(configuration.cluster())
         .setKey("secret")
         .build();
       send(handshake);

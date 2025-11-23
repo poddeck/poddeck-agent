@@ -12,10 +12,12 @@ import org.apache.commons.configuration2.AbstractConfiguration;
 public class CommunicationConfiguration implements Configuration {
   private String hostname;
   private int port;
+  private String cluster;
 
   @Override
   public void load(AbstractConfiguration file) {
     hostname = file.getString("communication.hostname");
     port = file.getInt("communication.port");
+    cluster = file.getString("communication.cluster");
   }
 }
