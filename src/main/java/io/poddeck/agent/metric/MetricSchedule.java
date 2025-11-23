@@ -26,17 +26,17 @@ public final class MetricSchedule {
   private final CoreV1Api coreApi;
   private final TelegrafConfiguration telegrafConfiguration;
   private final TelegrafRequestFactory telegrafRequestFactory;
+  private final MetricConfiguration metricConfiguration;
   private final CommunicationClient client;
   private final ScheduledExecutorService executorService =
     Executors.newScheduledThreadPool(10);
   private ScheduledFuture<?> scheduler;
 
-  private static final int RESET_INTERVAL = 1000 * 5;
-  private static final TimeUnit RESET_TIME_UNIT = TimeUnit.MILLISECONDS;
+  private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
   public void start() {
     scheduler = executorService.scheduleAtFixedRate(this::execute, 0,
-      RESET_INTERVAL, RESET_TIME_UNIT);
+      metricConfiguration.intervalSeconds() * 1000L, TIME_UNIT);
   }
 
   private void execute() {
