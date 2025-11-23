@@ -33,6 +33,8 @@ dependencies {
   testImplementation("org.projectlombok:lombok:1.18.42")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 
+  implementation("org.json:json:20250517")
+
   implementation("org.apache.commons:commons-configuration2:2.12.0")
   implementation("commons-beanutils:commons-beanutils:1.11.0")
 
@@ -40,9 +42,28 @@ dependencies {
   implementation("io.grpc:grpc-protobuf:1.76.0")
   implementation("io.grpc:grpc-netty:1.76.0")
 
+  implementation("io.kubernetes:client-java:24.0.0")
+
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 }
 
 tasks.test {
   useJUnitPlatform()
+}
+
+tasks.named<Jar>("jar") {
+  manifest {
+    attributes["Main-Class"] = "io.poddeck.agent.AgentApplication"
+  }
+  from(sourceSets.main.get().output)
+
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+  from({
+    configurations.runtimeClasspath.get()
+      .filter { it.name.endsWith("jar") }
+      .map { zipTree(it) }
+  }) {
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+  }
 }
