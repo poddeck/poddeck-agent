@@ -5,7 +5,9 @@ import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.ServiceRepository;
 import io.poddeck.agent.metric.MetricSchedule;
 import io.poddeck.agent.node.NodeListService;
+import io.poddeck.agent.pod.PodListService;
 import io.poddeck.common.NodeListRequest;
+import io.poddeck.common.PodListRequest;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.log.Log;
 
@@ -26,6 +28,8 @@ public class AgentApplication {
       var serviceRepository = injector.getInstance(ServiceRepository.class);
       serviceRepository.register(NodeListRequest.class,
         injector.getInstance(NodeListService.class));
+      serviceRepository.register(PodListRequest.class,
+        injector.getInstance(PodListService.class));
       var client = injector.getInstance(CommunicationClient.class);
       client.connect();
       log.info("Successfully connected to core");
