@@ -94,7 +94,7 @@ public final class PodListService implements Service<PodListRequest> {
     var statuses = status.getContainerStatuses() != null ?
       status.getContainerStatuses().stream().map(this::assemblePodContainerStatus).toList() :
       Lists.<PodContainerStatus>newArrayList();
-    long age = 0;
+    var age = 0L;
     if (pod.getMetadata() != null && pod.getMetadata().getCreationTimestamp() != null) {
       age = (System.currentTimeMillis() -
         pod.getMetadata().getCreationTimestamp().toEpochSecond() * 1000);
@@ -106,6 +106,8 @@ public final class PodListService implements Service<PodListRequest> {
       .setHostIp(status.getHostIP() != null ? status.getHostIP() : "")
       .setPodIp(status.getPodIP() != null ? status.getPodIP() : "")
       .setAge(age)
+      .setNode(pod.getSpec() != null && pod.getSpec().getNodeName() != null ?
+        pod.getSpec().getNodeName() : "")
       .build();
   }
 
