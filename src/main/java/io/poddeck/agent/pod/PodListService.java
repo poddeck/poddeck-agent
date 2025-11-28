@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -127,10 +128,10 @@ public final class PodListService implements Service<PodListRequest> {
       .setReady(status.getReady())
       .setState(status.getState() != null ?
         determineContainerState(status.getState()) : "")
-      .setReason(status.getState() != null && status.getState().getWaiting() != null ?
-        status.getState().getWaiting().getReason() : "")
-      .setMessage(status.getState() != null && status.getState().getWaiting() != null ?
-        status.getState().getWaiting().getMessage() : "")
+      .setMessage(Optional.ofNullable(status.getState())
+        .map(s -> s.getWaiting()).map(w -> w.getReason()).orElse(""))
+      .setMessage(Optional.ofNullable(status.getState())
+        .map(s -> s.getWaiting()).map(w -> w.getMessage()).orElse(""))
       .setRestartCount(status.getRestartCount())
       .build();
   }
