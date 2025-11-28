@@ -9,16 +9,19 @@ import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.Service;
 import io.poddeck.common.*;
 
+import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class PodListService implements Service<PodListRequest> {
+  private final Log log;
   private final CoreV1Api coreApi;
 
   @Override
@@ -38,6 +41,7 @@ public final class PodListService implements Service<PodListRequest> {
       .setMetadata(assemblePodMetadata(pod))
       .setSpec(assemblePodSpec(pod))
       .setStatus(assemblePodStatus(pod))
+      .addAllEvents(assemblePodEvents(pod))
       .build();
   }
 
@@ -145,5 +149,41 @@ public final class PodListService implements Service<PodListRequest> {
       return "Waiting";
     }
     return "Unknown";
+  }
+
+  private List<PodEvent> assemblePodEvents(V1Pod pod) {
+    try {
+      var metadata = pod.getMetadata();
+      if (metadata == null) {
+        return Collections.emptyList();
+      }
+      var namespace = metadata.getNamespace();
+      var name = metadata.getName();
+      var fieldSelector = "involvedObject.kind=Pod,involvedObject.name=" + name;
+      var eventList = coreApi.listNamespacedEvent(namespace)
+        .fieldSelector(fieldSelector).execute().getItems();
+      return eventList.stream()
+        .map(this::assemblePodEvent).toList();
+    } catch (Exception exception) {
+      log.processError(exception);
+      return Lists.newArrayList();
+    }
+  }
+
+  private PodEvent assemblePodEvent(CoreV1Event event) {
+    long timestamp = 0L;
+    if (event.getLastTimestamp() != null) {
+      timestamp = event.getLastTimestamp().toInstant().toEpochMilli();
+    } else if (event.getEventTime() != null) {
+      timestamp = event.getEventTime().toInstant().toEpochMilli();
+    }
+    return PodEvent.newBuilder()
+      .setType(Optional.ofNullable(event.getType()).orElse(""))
+      .setReason(Optional.ofNullable(event.getReason()).orElse(""))
+      .setMessage(Optional.ofNullable(event.getMessage()).orElse(""))
+      .setTimestamp(timestamp)
+      .setSource(event.getSource() != null && event.getSource().getComponent() != null
+        ? event.getSource().getComponent() : "")
+      .build();
   }
 }

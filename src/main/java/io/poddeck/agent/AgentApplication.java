@@ -10,6 +10,7 @@ import io.poddeck.agent.namespace.NamespaceListService;
 import io.poddeck.agent.node.NodeListService;
 import io.poddeck.agent.pod.PodDeleteService;
 import io.poddeck.agent.pod.PodListService;
+import io.poddeck.agent.pod.PodLogService;
 import io.poddeck.common.*;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.log.Log;
@@ -41,6 +42,8 @@ public class AgentApplication {
         injector.getInstance(PodDeleteService.class));
       serviceRepository.register(PodListRequest.class,
         injector.getInstance(PodListService.class));
+      serviceRepository.register(PodLogRequest.class,
+        injector.getInstance(PodLogService.class));
       var client = injector.getInstance(CommunicationClient.class);
       client.connect();
       log.info("Successfully connected to core");
