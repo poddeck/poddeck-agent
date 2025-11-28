@@ -4,12 +4,13 @@ import com.google.inject.Guice;
 import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.ServiceRepository;
 import io.poddeck.agent.metric.MetricSchedule;
+import io.poddeck.agent.namespace.NamespaceCreateService;
+import io.poddeck.agent.namespace.NamespaceDeleteService;
 import io.poddeck.agent.namespace.NamespaceListService;
 import io.poddeck.agent.node.NodeListService;
+import io.poddeck.agent.pod.PodDeleteService;
 import io.poddeck.agent.pod.PodListService;
-import io.poddeck.common.NamespaceListRequest;
-import io.poddeck.common.NodeListRequest;
-import io.poddeck.common.PodListRequest;
+import io.poddeck.common.*;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.log.Log;
 
@@ -30,8 +31,14 @@ public class AgentApplication {
       var serviceRepository = injector.getInstance(ServiceRepository.class);
       serviceRepository.register(NodeListRequest.class,
         injector.getInstance(NodeListService.class));
+      serviceRepository.register(NamespaceCreateRequest.class,
+        injector.getInstance(NamespaceCreateService.class));
+      serviceRepository.register(NamespaceDeleteRequest.class,
+        injector.getInstance(NamespaceDeleteService.class));
       serviceRepository.register(NamespaceListRequest.class,
         injector.getInstance(NamespaceListService.class));
+      serviceRepository.register(PodDeleteRequest.class,
+        injector.getInstance(PodDeleteService.class));
       serviceRepository.register(PodListRequest.class,
         injector.getInstance(PodListService.class));
       var client = injector.getInstance(CommunicationClient.class);
