@@ -20,11 +20,10 @@ public final class TunnelService implements StreamObserver<TunnelMessage> {
 
   @Override
   public void onError(Throwable throwable) {
+    log.processError(throwable);
     if (throwable instanceof StatusRuntimeException) {
       processDisconnect();
-      return;
     }
-    log.processError(throwable);
   }
 
   @Override

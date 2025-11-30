@@ -15,6 +15,8 @@ import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -23,6 +25,7 @@ public final class CommunicationClient {
   private final Log log;
   private final CommunicationConfiguration configuration;
   private final ServiceRepository serviceRepository;
+  private final Executor executor = Executors.newSingleThreadExecutor();
   private ManagedChannel channel;
   private StreamObserver<TunnelMessage> stream;
 
@@ -66,7 +69,11 @@ public final class CommunicationClient {
     if (!requestId.isEmpty()) {
       tunnelMessage.setRequestId(requestId);
     }
-    stream.onNext(tunnelMessage.build());
+    send(tunnelMessage.build());
+  }
+
+  private void send(TunnelMessage message) {
+    executor.execute(() -> stream.onNext(message));
   }
 
   public void shutdown() throws Exception {
