@@ -19,19 +19,19 @@ public final class PodLogService implements Service<PodLogRequest> {
   public void process(
     CommunicationClient client, String requestId, PodLogRequest request
   ) throws Exception {
-    var namespace = request.getNamespace();
-    var pod = request.getPod();
-    var container = request.getContainer().isEmpty() ?
-      null : request.getContainer();
-    int tailLines = request.getTailLines() > 0 ?
-      request.getTailLines() : null;
-    int sinceSeconds = request.getSinceSeconds() > 0 ?
-      request.getSinceSeconds() : null;
-    var logs = coreApi.readNamespacedPodLog(pod, namespace)
-      .container(container).tailLines(tailLines)
-      .sinceSeconds(sinceSeconds)
-      .timestamps(true)
-      .execute();
+    var builder = coreApi
+      .readNamespacedPodLog(request.getPod(), request.getNamespace())
+      .timestamps(true);
+    if (!request.getContainer().isEmpty()) {
+      builder = builder.container(request.getContainer());
+    }
+    if (request.getSinceSeconds() > 0) {
+      builder = builder.sinceSeconds(request.getSinceSeconds());
+    }
+    var logs = builder.execute();
+    if (logs == null) {
+      logs = "";
+    }
     client.send(requestId, PodLogResponse.newBuilder()
       .setLogs(logs).build());
   }

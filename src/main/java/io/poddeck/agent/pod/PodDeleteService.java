@@ -17,11 +17,10 @@ public final class PodDeleteService implements Service<PodDeleteRequest> {
 
   @Override
   public void process(
-    CommunicationClient client, String requestId,
-    PodDeleteRequest podDeleteRequest
+    CommunicationClient client, String requestId, PodDeleteRequest request
   ) throws Exception {
-    coreApi.deleteNamespacedPod(podDeleteRequest.getPod(),
-      podDeleteRequest.getNamespace()).execute();
+    coreApi.deleteNamespacedPod(request.getPod(), request.getNamespace())
+      .execute();
     client.send(requestId, PodDeleteResponse.newBuilder()
       .setSuccess(true).build());
   }
