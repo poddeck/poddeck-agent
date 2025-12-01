@@ -231,3 +231,25 @@ roleRef:
   kind: ClusterRole
   name: poddeck-agent-events
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: poddeck-agent-deployment-reader
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: poddeck-agent-deployment-reader-binding
+subjects:
+  - kind: ServiceAccount
+    name: poddeck-agent
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: poddeck-agent-deployment-reader
+  apiGroup: rbac.authorization.k8s.io
