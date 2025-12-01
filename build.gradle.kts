@@ -42,7 +42,7 @@ dependencies {
   implementation("io.grpc:grpc-protobuf:1.77.0")
   implementation("io.grpc:grpc-netty:1.77.0")
 
-  implementation("io.kubernetes:client-java:24.0.0")
+  implementation("io.kubernetes:client-java:25.0.0-legacy")
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 }
