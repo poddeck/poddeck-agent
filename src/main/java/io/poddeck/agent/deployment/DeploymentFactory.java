@@ -39,8 +39,10 @@ public final class DeploymentFactory {
     return DeploymentMetadata.newBuilder()
       .setName(Optional.ofNullable(metadata.getName()).orElse(""))
       .setNamespace(Optional.ofNullable(metadata.getNamespace()).orElse(""))
-      .putAllLabels(metadata.getLabels() != null ? metadata.getLabels() : Collections.emptyMap())
-      .putAllAnnotations(metadata.getAnnotations() != null ? metadata.getAnnotations() : Collections.emptyMap())
+      .putAllLabels(metadata.getLabels() != null ?
+        metadata.getLabels() : Collections.emptyMap())
+      .putAllAnnotations(metadata.getAnnotations() != null ?
+        metadata.getAnnotations() : Collections.emptyMap())
       .build();
   }
 
@@ -62,9 +64,8 @@ public final class DeploymentFactory {
       return DeploymentSelector.newBuilder().build();
     }
     return DeploymentSelector.newBuilder()
-      .putAllMatchLabels(
-        selector.getMatchLabels() != null ? selector.getMatchLabels() : Collections.emptyMap()
-      )
+      .putAllMatchLabels(selector.getMatchLabels() != null ?
+        selector.getMatchLabels() : Collections.emptyMap())
       .build();
   }
 
@@ -122,8 +123,14 @@ public final class DeploymentFactory {
       return DeploymentStatus.newBuilder().build();
     }
     var status = deployment.getStatus();
+    var conditions = status.getConditions() != null ?
+      status.getConditions().stream()
+        .map(this::assembleDeploymentCondition).toList() :
+      Lists.<DeploymentCondition>newArrayList();
     var age = 0L;
-    if (deployment.getMetadata() != null && deployment.getMetadata().getCreationTimestamp() != null) {
+    if (deployment.getMetadata() != null &&
+      deployment.getMetadata().getCreationTimestamp() != null
+    ) {
       age = System.currentTimeMillis() -
         deployment.getMetadata().getCreationTimestamp().toEpochSecond() * 1000L;
     }
@@ -141,6 +148,21 @@ public final class DeploymentFactory {
       .setCurrentRevision(Optional.ofNullable(status.getObservedGeneration())
         .map(Object::toString).orElse(""))
       .setAge(age)
+      .addAllConditions(conditions)
+      .build();
+  }
+
+  private DeploymentCondition assembleDeploymentCondition(
+    V1DeploymentCondition condition
+  ) {
+    if (condition == null) {
+      return DeploymentCondition.newBuilder().build();
+    }
+    return DeploymentCondition.newBuilder()
+      .setType(Optional.ofNullable(condition.getType()).orElse(""))
+      .setStatus(Optional.ofNullable(condition.getStatus()).orElse(""))
+      .setReason(Optional.ofNullable(condition.getReason()).orElse(""))
+      .setMessage(Optional.ofNullable(condition.getMessage()).orElse(""))
       .build();
   }
 
