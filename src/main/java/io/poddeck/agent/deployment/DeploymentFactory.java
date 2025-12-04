@@ -3,9 +3,9 @@ package io.poddeck.agent.deployment;
 import com.google.api.client.util.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.util.Yaml;
 import io.poddeck.common.*;
 import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
@@ -28,6 +28,7 @@ public final class DeploymentFactory {
       .setSpec(assembleSpec(deployment))
       .setStatus(assembleStatus(deployment))
       .addAllEvents(assembleDeploymentEvents(deployment))
+      .setRaw(Yaml.dump(deployment))
       .build();
   }
 
@@ -51,7 +52,6 @@ public final class DeploymentFactory {
       return DeploymentSpec.newBuilder().build();
     }
     var spec = deployment.getSpec();
-
     return DeploymentSpec.newBuilder()
       .setReplicas(spec.getReplicas() != null ? spec.getReplicas() : 0)
       .setSelector(assembleSelector(spec.getSelector()))

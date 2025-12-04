@@ -3,13 +3,10 @@ package io.poddeck.agent.deployment;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.Service;
 import io.poddeck.common.DeploymentListRequest;
 import io.poddeck.common.DeploymentListResponse;
-import io.poddeck.common.PodListRequest;
-import io.poddeck.common.PodListResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
