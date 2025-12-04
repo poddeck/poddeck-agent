@@ -35,6 +35,13 @@ public final class PodFactory {
       return PodMetadata.newBuilder().build();
     }
     var metadata = pod.getMetadata();
+    var controlledBy = "";
+    if (metadata.getOwnerReferences() != null &&
+      !metadata.getOwnerReferences().isEmpty()
+    ) {
+      var owner = metadata.getOwnerReferences().get(0);
+      controlledBy = owner.getKind() + "/" + owner.getName();
+    }
     return PodMetadata.newBuilder()
       .setName(metadata.getName())
       .setNamespace(metadata.getNamespace())
@@ -42,6 +49,7 @@ public final class PodFactory {
         metadata.getLabels() : Collections.emptyMap())
       .putAllAnnotations(metadata.getAnnotations() != null ?
         metadata.getAnnotations() : Collections.emptyMap())
+      .setControlledBy(controlledBy)
       .build();
   }
 
