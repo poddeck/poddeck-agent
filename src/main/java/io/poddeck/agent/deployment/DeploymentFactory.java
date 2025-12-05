@@ -11,6 +11,7 @@ import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -163,6 +164,8 @@ public final class DeploymentFactory {
       .setStatus(Optional.ofNullable(condition.getStatus()).orElse(""))
       .setReason(Optional.ofNullable(condition.getReason()).orElse(""))
       .setMessage(Optional.ofNullable(condition.getMessage()).orElse(""))
+      .setLastUpdate(Optional.ofNullable(condition.getLastUpdateTime())
+        .orElse(OffsetDateTime.now()).toEpochSecond() * 1000)
       .build();
   }
 
