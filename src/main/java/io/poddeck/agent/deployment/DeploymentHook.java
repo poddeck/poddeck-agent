@@ -18,6 +18,7 @@ public final class DeploymentHook implements Hook {
   private final DeploymentFindService deploymentFindService;
   private final DeploymentDeleteService deploymentDeleteService;
   private final DeploymentScaleService deploymentScaleService;
+  private final DeploymentRestartService deploymentRestartService;
   private final DeploymentEditService deploymentEditService;
 
   @EventHook
@@ -30,6 +31,8 @@ public final class DeploymentHook implements Hook {
       deploymentDeleteService);
     serviceRepository.register(DeploymentScaleRequest.class,
       deploymentScaleService);
+    serviceRepository.register(DeploymentRestartRequest.class,
+      deploymentRestartService);
     serviceRepository.register(DeploymentEditRequest.class,
       deploymentEditService);
   }
