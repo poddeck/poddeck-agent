@@ -18,6 +18,13 @@ spec:
         - name: poddeck-agent
           image: poddeck-agent:latest
           imagePullPolicy: Never
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Namespace

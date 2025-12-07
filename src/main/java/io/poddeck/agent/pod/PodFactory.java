@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
+import io.poddeck.agent.capacity.Capacity;
 import io.poddeck.common.*;
 import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
@@ -43,8 +44,8 @@ public final class PodFactory {
       controlledBy = owner.getKind() + "/" + owner.getName();
     }
     return PodMetadata.newBuilder()
-      .setName(metadata.getName())
-      .setNamespace(metadata.getNamespace())
+      .setName(metadata.getName() != null ? metadata.getName() : "")
+      .setNamespace(metadata.getNamespace() != null ? metadata.getNamespace() : "")
       .putAllLabels(metadata.getLabels() != null ?
         metadata.getLabels() : Collections.emptyMap())
       .putAllAnnotations(metadata.getAnnotations() != null ?
@@ -78,6 +79,23 @@ public final class PodFactory {
         container.getEnv().stream().collect(Collectors.toMap(
           V1EnvVar::getName, v -> v.getValue() != null ? v.getValue() : "")) :
         Collections.emptyMap())
+      .setResources(assembleResourceRequirements(container.getResources()))
+      .build();
+  }
+
+  private ResourceRequirements assembleResourceRequirements(
+    V1ResourceRequirements requirements
+  ) {
+    if (requirements == null) {
+      return ResourceRequirements.newBuilder().build();
+    }
+    var requests = Capacity.of(requirements.getRequests());
+    var limits = Capacity.of(requirements.getLimits());
+    return ResourceRequirements.newBuilder()
+      .setCpuRequest(requests.cpu())
+      .setCpuLimit(limits.cpu())
+      .setMemoryRequest(requests.memory())
+      .setMemoryLimit(limits.memory())
       .build();
   }
 
@@ -147,7 +165,9 @@ public final class PodFactory {
   private List<PodEvent> assemblePodEvents(V1Pod pod) {
     try {
       var metadata = pod.getMetadata();
-      if (metadata == null) {
+      if (metadata == null || metadata.getNamespace() == null ||
+        metadata.getName() == null
+      ) {
         return Collections.emptyList();
       }
       var namespace = metadata.getNamespace();

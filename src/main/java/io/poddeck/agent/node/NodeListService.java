@@ -6,9 +6,11 @@ import com.google.inject.Singleton;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeCondition;
+import io.poddeck.agent.capacity.Capacity;
 import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.Service;
 import io.poddeck.common.*;
+import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class NodeListService implements Service<NodeListRequest> {
   private final CoreV1Api coreApi;
+  private final Log log;
 
   @Override
   public void process(
@@ -77,15 +80,39 @@ public final class NodeListService implements Service<NodeListRequest> {
   }
 
   private NodeCapacity assembleNodeCapacity(V1Node node) {
-    if (node.getStatus().getCapacity() == null) {
-      return NodeCapacity.newBuilder().build();
+    try {
+      if (node.getStatus().getCapacity() == null) {
+        return NodeCapacity.newBuilder().build();
+      }
+      var capacity = Capacity.of(node.getStatus().getCapacity());
+      var pods = coreApi.listPodForAllNamespaces()
+        .fieldSelector("spec.nodeName=" + node.getMetadata().getName())
+        .execute().getItems();
+      var cpuAllocated = 0L;
+      var memoryAllocated = 0L;
+      for (var pod : pods) {
+        if (pod.getSpec() == null) {
+          continue;
+        }
+        for (var container : pod.getSpec().getContainers()) {
+          var resources = container.getResources();
+          if (resources != null && resources.getRequests() != null) {
+            var requests = Capacity.of(resources.getRequests());
+            cpuAllocated += requests.cpu();
+            memoryAllocated += requests.memory();
+          }
+        }
+      }
+      return NodeCapacity.newBuilder()
+        .setTotalCpu(capacity.cpu())
+        .setTotalMemory(capacity.memory())
+        .setAllocatedCpu(cpuAllocated)
+        .setAllocatedMemory(memoryAllocated)
+        .build();
+    } catch (Exception exception) {
+      log.processError(exception);
+      return null;
     }
-    var capacity = node.getStatus().getCapacity();
-    return NodeCapacity.newBuilder()
-      .setCpu(capacity.get("cpu").getNumber().toPlainString())
-      .setMemory(capacity.get("memory").getNumber().toPlainString())
-      .setPods(capacity.get("pods").getNumber().toPlainString())
-      .build();
   }
 
   private NodeInfo assembleNodeInfo(V1Node node) {

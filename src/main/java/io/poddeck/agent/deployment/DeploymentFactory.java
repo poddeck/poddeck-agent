@@ -7,6 +7,7 @@ import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.Yaml;
+import io.poddeck.agent.pod.PodFactory;
 import io.poddeck.common.*;
 import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public final class DeploymentFactory {
   private final CoreV1Api coreApi;
   private final AppsV1Api appsApi;
+  private final PodFactory podFactory;
   private final Log log;
 
   public Deployment assembleDeployment(V1Deployment deployment) {
@@ -76,48 +78,13 @@ public final class DeploymentFactory {
     if (template == null) {
       return PodTemplate.newBuilder().build();
     }
-    var metadata = Optional.ofNullable(template.getMetadata())
-      .orElse(new V1ObjectMeta());
-    var spec = Optional.ofNullable(template.getSpec()).orElse(new V1PodSpec());
+    var pod = new V1Pod()
+      .metadata(template.getMetadata())
+      .spec(template.getSpec());
+    var result = podFactory.assemblePod(pod);
     return PodTemplate.newBuilder()
-      .setMetadata(PodMetadata.newBuilder()
-        .setName(Optional.ofNullable(metadata.getName()).orElse(""))
-        .setNamespace(Optional.ofNullable(metadata.getNamespace()).orElse(""))
-        .putAllLabels(metadata.getLabels() != null ?
-          metadata.getLabels() : Collections.emptyMap())
-        .putAllAnnotations(metadata.getAnnotations() != null ?
-          metadata.getAnnotations() : Collections.emptyMap())
-        .build())
-      .setSpec(assemblePodSpec(spec))
-      .build();
-  }
-
-  private PodSpec assemblePodSpec(V1PodSpec spec) {
-    if (spec == null) {
-      return PodSpec.newBuilder().build();
-    }
-    var containers = Optional.ofNullable(spec.getContainers())
-      .orElse(Lists.newArrayList()).stream().map(this::assembleContainer).toList();
-    return PodSpec.newBuilder()
-      .setNodeName(Optional.ofNullable(spec.getNodeName()).orElse(""))
-      .addAllContainers(containers)
-      .build();
-  }
-
-  private Container assembleContainer(V1Container container) {
-    return Container.newBuilder()
-      .setName(container.getName())
-      .setImage(Optional.ofNullable(container.getImage()).orElse(""))
-      .addAllCommand(Optional.ofNullable(container.getCommand())
-        .orElse(Lists.newArrayList()))
-      .addAllArgs(Optional.ofNullable(container.getArgs())
-        .orElse(Lists.newArrayList()))
-      .putAllEnv(container.getEnv() != null ?
-        container.getEnv().stream().collect(Collectors.toMap(
-          V1EnvVar::getName, v -> Optional.ofNullable(v.getValue()).orElse("")
-        )) :
-        Collections.emptyMap()
-      )
+      .setMetadata(result.getMetadata())
+      .setSpec(result.getSpec())
       .build();
   }
 
