@@ -241,6 +241,7 @@ rules:
     resources:
       - deployments
       - deployments/scale
+      - replicasets
     verbs:
       - get
       - list

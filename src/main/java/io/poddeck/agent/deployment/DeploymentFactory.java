@@ -3,6 +3,7 @@ package io.poddeck.agent.deployment;
 import com.google.api.client.util.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.Yaml;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class DeploymentFactory {
   private final CoreV1Api coreApi;
+  private final AppsV1Api appsApi;
   private final Log log;
 
   public Deployment assembleDeployment(V1Deployment deployment) {
@@ -150,6 +152,7 @@ public final class DeploymentFactory {
         .map(Object::toString).orElse(""))
       .setAge(age)
       .addAllConditions(conditions)
+      .setReplicaSet(findReplicaSetName(deployment))
       .build();
   }
 
@@ -167,6 +170,27 @@ public final class DeploymentFactory {
       .setLastUpdate(Optional.ofNullable(condition.getLastUpdateTime())
         .orElse(OffsetDateTime.now()).toEpochSecond() * 1000)
       .build();
+  }
+
+  private String findReplicaSetName(V1Deployment deployment) {
+    try {
+      var selector = Optional
+        .ofNullable(deployment.getSpec().getSelector().getMatchLabels())
+        .orElse(Collections.emptyMap()).entrySet().stream()
+        .map(e -> e.getKey() + "=" + e.getValue())
+        .collect(Collectors.joining(","));
+      var list = appsApi
+        .listNamespacedReplicaSet(deployment.getMetadata().getNamespace())
+        .labelSelector(selector).execute().getItems();
+      return list.stream()
+        .filter(rs -> rs.getMetadata() != null)
+        .findFirst()
+        .map(rs -> rs.getMetadata().getName())
+        .orElse("");
+    } catch (Exception e) {
+      log.processError(e);
+      return "";
+    }
   }
 
   private List<DeploymentEvent> assembleDeploymentEvents(V1Deployment deployment) {
