@@ -7,6 +7,7 @@ import io.poddeck.agent.application.ApplicationPostRunEvent;
 import io.poddeck.agent.application.ApplicationPreRunEvent;
 import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.deployment.DeploymentHook;
+import io.poddeck.agent.event.EventHook;
 import io.poddeck.agent.metric.MetricSchedule;
 import io.poddeck.agent.namespace.NamespaceHook;
 import io.poddeck.agent.node.NodeHook;
@@ -49,6 +50,7 @@ public class AgentApplication {
     var hookRegistry = injector.getInstance(HookRegistry.class);
     hookRegistry.register(injector.getInstance(NodeHook.class));
     hookRegistry.register(injector.getInstance(NamespaceHook.class));
+    hookRegistry.register(injector.getInstance(EventHook.class));
     hookRegistry.register(injector.getInstance(PodHook.class));
     hookRegistry.register(injector.getInstance(DeploymentHook.class));
   }
