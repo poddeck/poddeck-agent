@@ -41,6 +41,7 @@ dependencies {
   implementation("io.grpc:grpc-stub:1.77.0")
   implementation("io.grpc:grpc-protobuf:1.77.0")
   implementation("io.grpc:grpc-netty:1.77.0")
+  implementation("com.google.protobuf:protobuf-java:4.33.2")
 
   implementation("io.kubernetes:client-java:25.0.0")
 
