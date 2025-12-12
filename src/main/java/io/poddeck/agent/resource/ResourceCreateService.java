@@ -30,8 +30,15 @@ public final class ResourceCreateService implements Service<ResourceCreateReques
   ) throws Exception {
     try {
       var resources = Yaml.loadAll(request.getRaw());
+      var created = false;
       for (var resource : resources) {
-        createResource(resource);
+        if (resource instanceof KubernetesObject) {
+          createResource(resource);
+          created = true;
+        }
+      }
+      if (!created) {
+        throw new IllegalArgumentException("No valid Kubernetes resources found");
       }
       client.send(requestId, ResourceCreateResponse.newBuilder()
         .setSuccess(true).build());
