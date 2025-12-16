@@ -13,6 +13,7 @@ import io.poddeck.agent.namespace.NamespaceHook;
 import io.poddeck.agent.node.NodeHook;
 import io.poddeck.agent.pod.PodHook;
 import io.poddeck.agent.resource.ResourceHook;
+import io.poddeck.agent.service.ServiceHook;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.event.HookRegistry;
 import io.poddeck.common.log.Log;
@@ -55,5 +56,6 @@ public class AgentApplication {
     hookRegistry.register(injector.getInstance(EventHook.class));
     hookRegistry.register(injector.getInstance(PodHook.class));
     hookRegistry.register(injector.getInstance(DeploymentHook.class));
+    hookRegistry.register(injector.getInstance(ServiceHook.class));
   }
 }
