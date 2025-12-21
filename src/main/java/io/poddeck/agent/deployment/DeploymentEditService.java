@@ -9,6 +9,7 @@ import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.Service;
 import io.poddeck.common.DeploymentEditRequest;
 import io.poddeck.common.DeploymentEditResponse;
+import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -16,16 +17,23 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class DeploymentEditService implements Service<DeploymentEditRequest> {
   private final AppsV1Api appsApi;
+  private final Log log;
 
   @Override
   public void process(
     CommunicationClient client, String requestId,
     DeploymentEditRequest request
   ) throws Exception {
-    var deployment = Yaml.loadAs(request.getRaw(), V1Deployment.class);
-    appsApi.replaceNamespacedDeployment(request.getDeployment(),
-      request.getNamespace(), deployment).execute();
-    client.send(requestId, DeploymentEditResponse.newBuilder()
-      .setSuccess(true).build());
+    try {
+      var deployment = Yaml.loadAs(request.getRaw(), V1Deployment.class);
+      appsApi.replaceNamespacedDeployment(request.getDeployment(),
+        request.getNamespace(), deployment).execute();
+      client.send(requestId, DeploymentEditResponse.newBuilder()
+        .setSuccess(true).build());
+    } catch (Exception exception) {
+      log.processError(exception);
+      client.send(requestId, DeploymentEditResponse.newBuilder()
+        .setSuccess(false).build());
+    }
   }
 }
