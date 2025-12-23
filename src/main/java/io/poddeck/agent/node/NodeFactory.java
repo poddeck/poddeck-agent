@@ -5,13 +5,13 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Node;
-import io.kubernetes.client.openapi.models.V1NodeCondition;
 import io.poddeck.agent.capacity.Capacity;
 import io.poddeck.common.*;
 import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +25,7 @@ public final class NodeFactory {
     return Node.newBuilder()
       .setMetadata(assembleNodeMetadata(node))
       .setStatus(assembleNodeStatus(node))
+      .addAllEvents(assembleNodeEvents(node))
       .build();
   }
 
@@ -50,7 +51,8 @@ public final class NodeFactory {
       .addAllAddresses(assembleNodeAddresses(node))
       .setCapacity(assembleNodeCapacity(node))
       .setInfo(assembleNodeInfo(node))
-      .setCondition(assembleNodeCondition(node))
+      .addAllConditions(assembleNodeConditions(node))
+      .setAge(calculateAge(node))
       .build();
   }
 
@@ -116,18 +118,58 @@ public final class NodeFactory {
       .build();
   }
 
-  private NodeCondition assembleNodeCondition(V1Node node) {
+  private List<NodeCondition> assembleNodeConditions(V1Node node) {
     if (node.getStatus().getConditions() == null) {
-      return NodeCondition.newBuilder().build();
+      return Lists.newArrayList();
     }
-    var conditions = node.getStatus().getConditions();
-    return NodeCondition.newBuilder()
-      .setIsReady(conditions.stream()
-        .anyMatch(condition -> "Ready".equals(condition.getType()) &&
-          "True".equals(condition.getStatus())))
-      .addAllConditions(conditions.stream()
-        .filter(condition -> "True".equals(condition.getStatus()))
-        .map(V1NodeCondition::getType).toList())
-      .build();
+    return node.getStatus().getConditions().stream()
+      .map(condition -> NodeCondition.newBuilder()
+        .setType(condition.getType())
+        .setStatus(condition.getStatus())
+        .setReason(condition.getReason() != null ? condition.getReason() : "")
+        .setMessage(condition.getMessage() != null ? condition.getMessage() : "")
+        .setLastHeartbeat(toEpochSeconds(condition.getLastHeartbeatTime()))
+        .setLastTransition(toEpochSeconds(condition.getLastTransitionTime()))
+        .build())
+      .toList();
+  }
+
+  private List<NodeEvent> assembleNodeEvents(V1Node node) {
+    try {
+      if (node.getMetadata() == null || node.getMetadata().getName() == null) {
+        return Lists.newArrayList();
+      }
+      var events = coreApi.listEventForAllNamespaces()
+        .fieldSelector("involvedObject.name=" + node.getMetadata().getName() +
+          ",involvedObject.kind=Node")
+        .execute().getItems();
+      return events.stream()
+        .map(event -> NodeEvent.newBuilder()
+          .setType(event.getType() != null ? event.getType() : "")
+          .setReason(event.getReason() != null ? event.getReason() : "")
+          .setMessage(event.getMessage() != null ? event.getMessage() : "")
+          .setTimestamp(toEpochSeconds(event.getLastTimestamp()))
+          .setSource(event.getSource() != null && event.getSource().getComponent() != null ?
+            event.getSource().getComponent() : "")
+          .build())
+        .toList();
+    } catch (Exception exception) {
+      log.processError(exception);
+      return Lists.newArrayList();
+    }
+  }
+
+  private long calculateAge(V1Node node) {
+    if (node.getMetadata() == null || node.getMetadata().getCreationTimestamp() == null) {
+      return 0L;
+    }
+    return toEpochSeconds(node.getMetadata().getCreationTimestamp());
+  }
+
+  private long toEpochSeconds(OffsetDateTime dateTime) {
+    if (dateTime == null) {
+      return 0L;
+    }
+    return dateTime.toEpochSecond();
   }
 }
