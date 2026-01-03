@@ -6,14 +6,17 @@ import io.poddeck.agent.application.ApplicationLaunchEvent;
 import io.poddeck.agent.application.ApplicationPostRunEvent;
 import io.poddeck.agent.application.ApplicationPreRunEvent;
 import io.poddeck.agent.communication.CommunicationClient;
+import io.poddeck.agent.daemonset.DaemonSetHook;
 import io.poddeck.agent.deployment.DeploymentHook;
 import io.poddeck.agent.event.EventHook;
 import io.poddeck.agent.metric.MetricSchedule;
 import io.poddeck.agent.namespace.NamespaceHook;
 import io.poddeck.agent.node.NodeHook;
 import io.poddeck.agent.pod.PodHook;
+import io.poddeck.agent.replicaset.ReplicaSetHook;
 import io.poddeck.agent.resource.ResourceHook;
 import io.poddeck.agent.service.ServiceHook;
+import io.poddeck.agent.statefulset.StatefulSetHook;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.event.HookRegistry;
 import io.poddeck.common.log.Log;
@@ -56,6 +59,9 @@ public class AgentApplication {
     hookRegistry.register(injector.getInstance(EventHook.class));
     hookRegistry.register(injector.getInstance(PodHook.class));
     hookRegistry.register(injector.getInstance(DeploymentHook.class));
+    hookRegistry.register(injector.getInstance(DaemonSetHook.class));
+    hookRegistry.register(injector.getInstance(ReplicaSetHook.class));
+    hookRegistry.register(injector.getInstance(StatefulSetHook.class));
     hookRegistry.register(injector.getInstance(ServiceHook.class));
   }
 }
