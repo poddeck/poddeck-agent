@@ -242,13 +242,21 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: poddeck-agent-deployment-admin
+  name: poddeck-agent-unit-admin
 rules:
   - apiGroups: ["apps"]
     resources:
       - deployments
       - deployments/scale
+      - deployments/status
+      - daemonsets
+      - daemonsets/status
+      - statefulsets
+      - statefulsets/scale
+      - statefulsets/status
       - replicasets
+      - replicasets/scale
+      - replicasets/status
     verbs:
       - get
       - list
@@ -261,14 +269,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: poddeck-agent-deployment-admin-binding
+  name: poddeck-agent-unit-admin-binding
 subjects:
   - kind: ServiceAccount
     name: poddeck-agent
     namespace: default
 roleRef:
   kind: ClusterRole
-  name: poddeck-agent-deployment-admin
+  name: poddeck-agent-unit-admin
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
