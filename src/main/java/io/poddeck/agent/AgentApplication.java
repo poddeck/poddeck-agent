@@ -6,6 +6,7 @@ import io.poddeck.agent.application.ApplicationLaunchEvent;
 import io.poddeck.agent.application.ApplicationPostRunEvent;
 import io.poddeck.agent.application.ApplicationPreRunEvent;
 import io.poddeck.agent.communication.CommunicationClient;
+import io.poddeck.agent.cronjob.CronJobHook;
 import io.poddeck.agent.daemonset.DaemonSetHook;
 import io.poddeck.agent.deployment.DeploymentHook;
 import io.poddeck.agent.event.EventHook;
@@ -62,6 +63,7 @@ public class AgentApplication {
     hookRegistry.register(injector.getInstance(DaemonSetHook.class));
     hookRegistry.register(injector.getInstance(ReplicaSetHook.class));
     hookRegistry.register(injector.getInstance(StatefulSetHook.class));
+    hookRegistry.register(injector.getInstance(CronJobHook.class));
     hookRegistry.register(injector.getInstance(ServiceHook.class));
   }
 }
