@@ -349,7 +349,6 @@ rules:
       - update
       - patch
       - delete
-
   - apiGroups: ["batch"]
     resources:
       - jobs
@@ -358,6 +357,7 @@ rules:
       - get
       - list
       - watch
+      - create
       - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1

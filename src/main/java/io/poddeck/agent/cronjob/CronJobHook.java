@@ -19,6 +19,7 @@ public final class CronJobHook implements Hook {
   private final CronJobCreateService cronJobCreateService;
   private final CronJobDeleteService cronJobDeleteService;
   private final CronJobSuspendService cronJobSuspendService;
+  private final CronJobRunService cronJobRunService;
   private final CronJobEditService cronJobEditService;
 
   @EventHook
@@ -33,6 +34,8 @@ public final class CronJobHook implements Hook {
       cronJobDeleteService);
     serviceRepository.register(CronJobSuspendRequest.class,
       cronJobSuspendService);
+    serviceRepository.register(CronJobRunRequest.class,
+      cronJobRunService);
     serviceRepository.register(CronJobEditRequest.class,
       cronJobEditService);
   }
