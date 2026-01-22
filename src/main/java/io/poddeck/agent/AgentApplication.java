@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import io.poddeck.agent.application.ApplicationLaunchEvent;
 import io.poddeck.agent.application.ApplicationPostRunEvent;
 import io.poddeck.agent.application.ApplicationPreRunEvent;
+import io.poddeck.agent.audit.AuditHook;
 import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.cronjob.CronJobHook;
 import io.poddeck.agent.daemonset.DaemonSetHook;
@@ -65,5 +66,6 @@ public class AgentApplication {
     hookRegistry.register(injector.getInstance(StatefulSetHook.class));
     hookRegistry.register(injector.getInstance(CronJobHook.class));
     hookRegistry.register(injector.getInstance(ServiceHook.class));
+    hookRegistry.register(injector.getInstance(AuditHook.class));
   }
 }
