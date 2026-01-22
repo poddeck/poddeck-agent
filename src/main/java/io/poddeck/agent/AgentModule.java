@@ -8,9 +8,10 @@ import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.util.Config;
+import io.poddeck.agent.audit.AuditModule;
 import io.poddeck.agent.communication.CommunicationModule;
-import io.poddeck.agent.metric.MetricInjectionModule;
-import io.poddeck.agent.telegraf.TelegrafInjectionModule;
+import io.poddeck.agent.metric.MetricModule;
+import io.poddeck.agent.telegraf.TelegrafModule;
 import io.poddeck.common.event.EventExecutor;
 import io.poddeck.common.event.HookRegistry;
 import io.poddeck.common.log.Log;
@@ -25,8 +26,9 @@ public class AgentModule extends AbstractModule {
   @Override
   protected void configure() {
     install(CommunicationModule.create());
-    install(TelegrafInjectionModule.create());
-    install(MetricInjectionModule.create());
+    install(TelegrafModule.create());
+    install(MetricModule.create());
+    install(AuditModule.create());
   }
 
   @Provides
