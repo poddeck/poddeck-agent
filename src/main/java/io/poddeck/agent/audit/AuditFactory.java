@@ -65,7 +65,7 @@ public final class AuditFactory {
       .ifPresent(e -> builder.setSection(e.getAsString()));
     Optional.ofNullable(obj.get("type"))
       .ifPresent(e -> builder.setType(e.getAsString()));
-    Optional.ofNullable(obj.get("description"))
+    Optional.ofNullable(obj.get("desc"))
       .ifPresent(e -> builder.setDescription(e.getAsString()));
     if (obj.has("totals")) {
       builder.setTotals(parseTotals(obj.getAsJsonObject("totals")));
@@ -83,7 +83,7 @@ public final class AuditFactory {
     AuditResult.Builder builder = AuditResult.newBuilder();
     Optional.ofNullable(obj.get("test_number"))
       .ifPresent(e -> builder.setTestNumber(e.getAsString()));
-    Optional.ofNullable(obj.get("test_description"))
+    Optional.ofNullable(obj.get("test_desc"))
       .ifPresent(e -> builder.setTestDescription(e.getAsString()));
     Optional.ofNullable(obj.get("audit"))
       .ifPresent(e -> builder.setAudit(e.getAsString()));
