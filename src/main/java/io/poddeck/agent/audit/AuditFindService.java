@@ -33,7 +33,6 @@ public final class AuditFindService implements Service<AuditFindRequest> {
       client.send(requestId, AuditFindResponse.newBuilder()
         .setSuccess(true).setAudit(auditFactory.fromJson(log)).build());
     } catch (Exception exception) {
-      log.processError(exception);
       client.send(requestId, AuditFindResponse.newBuilder()
         .setSuccess(false).build());
     }
