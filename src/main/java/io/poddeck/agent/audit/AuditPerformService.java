@@ -28,18 +28,12 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
     CommunicationClient client, String requestId,
     AuditPerformRequest request
   ) throws Exception {
-    var metadata = auditJob.job().getMetadata();
+    V1Job createdJob = null;
     try {
-      batchV1Api.deleteNamespacedJob(metadata.getName(), metadata.getNamespace())
-        .execute();
-    } catch (Exception exception) {
-      log.processError(exception);
-    }
-    try {
-      var job = batchV1Api.createNamespacedJob(metadata.getNamespace(),
-        auditJob.job()).execute();
-      waitForJobCompletion(job);
-      var pod = getJobPod(job);
+      createdJob = batchV1Api.createNamespacedJob(
+        auditJob.job().getMetadata().getNamespace(), auditJob.job()).execute();
+      waitForJobCompletion(createdJob);
+      var pod = getJobPod(createdJob);
       var log = coreV1Api.readNamespacedPodLog(pod.getMetadata().getName(),
         pod.getMetadata().getNamespace()).execute();
       client.send(requestId, AuditPerformResponse.newBuilder()
@@ -49,6 +43,7 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
       client.send(requestId, AuditPerformResponse.newBuilder()
         .setSuccess(false).build());
     }
+    deleteJob(createdJob);
   }
 
   private static final long TIMEOUT = 60000L;
@@ -82,5 +77,17 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
       throw new IllegalStateException("No pod found for job");
     }
     return pods.getItems().get(0);
+  }
+
+  private void deleteJob(V1Job job) {
+    if (job == null) {
+      return;
+    }
+    try {
+      batchV1Api.deleteNamespacedJob(job.getMetadata().getName(),
+        job.getMetadata().getNamespace()).execute();
+    } catch (Exception exception) {
+      log.processError(exception);
+    }
   }
 }
