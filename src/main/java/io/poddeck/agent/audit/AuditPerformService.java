@@ -14,6 +14,8 @@ import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Comparator;
+
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class AuditPerformService implements Service<AuditPerformRequest> {
@@ -28,6 +30,7 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
     CommunicationClient client, String requestId,
     AuditPerformRequest request
   ) throws Exception {
+    deleteJob(auditJob.job());
     V1Job createdJob = null;
     try {
       createdJob = batchV1Api.createNamespacedJob(
@@ -43,7 +46,6 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
       client.send(requestId, AuditPerformResponse.newBuilder()
         .setSuccess(false).build());
     }
-    deleteJob(createdJob);
   }
 
   private static final long TIMEOUT = 60000L;
@@ -76,7 +78,9 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
     if (pods.getItems().isEmpty()) {
       throw new IllegalStateException("No pod found for job");
     }
-    return pods.getItems().get(0);
+    return pods.getItems().stream()
+      .max(Comparator.comparing(pod -> pod.getMetadata().getCreationTimestamp()))
+      .orElseThrow(() -> new IllegalStateException("No pod found for job"));
   }
 
   private void deleteJob(V1Job job) {
@@ -84,10 +88,15 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
       return;
     }
     try {
+      var pod = getJobPod(job);
+      coreV1Api.deleteNamespacedPod(pod.getMetadata().getName(),
+        pod.getMetadata().getNamespace()).execute();
+    } catch (Exception exception) {
+    }
+    try {
       batchV1Api.deleteNamespacedJob(job.getMetadata().getName(),
         job.getMetadata().getNamespace()).execute();
     } catch (Exception exception) {
-      log.processError(exception);
     }
   }
 }

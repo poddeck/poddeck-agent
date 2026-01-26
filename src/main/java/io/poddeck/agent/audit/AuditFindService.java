@@ -9,16 +9,16 @@ import io.poddeck.agent.communication.CommunicationClient;
 import io.poddeck.agent.communication.service.Service;
 import io.poddeck.common.AuditFindRequest;
 import io.poddeck.common.AuditFindResponse;
-import io.poddeck.common.log.Log;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Comparator;
 
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class AuditFindService implements Service<AuditFindRequest> {
   private final AuditJob auditJob;
   private final CoreV1Api coreV1Api;
-  private final Log log;
   private final AuditFactory auditFactory;
 
   @Override
@@ -46,6 +46,8 @@ public final class AuditFindService implements Service<AuditFindRequest> {
     if (pods.getItems().isEmpty()) {
       throw new IllegalStateException("No pod found for job");
     }
-    return pods.getItems().get(0);
+    return pods.getItems().stream()
+      .max(Comparator.comparing(pod -> pod.getMetadata().getCreationTimestamp()))
+      .orElseThrow(() -> new IllegalStateException("No pod found for job"));
   }
 }
