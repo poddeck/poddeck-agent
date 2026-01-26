@@ -37,10 +37,8 @@ public final class AuditPerformService implements Service<AuditPerformRequest> {
         auditJob.job().getMetadata().getNamespace(), auditJob.job()).execute();
       waitForJobCompletion(createdJob);
       var pod = getJobPod(createdJob);
-      var log = coreV1Api.readNamespacedPodLog(pod.getMetadata().getName(),
-        pod.getMetadata().getNamespace()).execute();
       client.send(requestId, AuditPerformResponse.newBuilder()
-        .setSuccess(true).setAudit(auditFactory.fromJson(log)).build());
+        .setSuccess(true).setAudit(auditFactory.fromJson(pod)).build());
     } catch (Exception exception) {
       log.processError(exception);
       client.send(requestId, AuditPerformResponse.newBuilder()

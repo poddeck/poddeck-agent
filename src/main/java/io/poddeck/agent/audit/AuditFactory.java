@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.models.V1Pod;
 import io.poddeck.common.Audit;
 import io.poddeck.common.AuditControl;
 import io.poddeck.common.AuditResult;
@@ -19,7 +21,11 @@ import java.util.Optional;
 @Singleton
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__({@Inject}))
 public final class AuditFactory {
-  public Audit fromJson(String json) {
+  private final CoreV1Api coreV1Api;
+
+  public Audit fromJson(V1Pod pod) throws Exception {
+    var json = coreV1Api.readNamespacedPodLog(pod.getMetadata().getName(),
+      pod.getMetadata().getNamespace()).execute();
     var jsonObj = JsonParser.parseString(json).getAsJsonObject();
     var auditBuilder = Audit.newBuilder();
     auditBuilder.setRaw(json);
@@ -32,6 +38,8 @@ public final class AuditFactory {
         auditBuilder.addControls(parseControl(elem.getAsJsonObject()));
       }
     }
+    auditBuilder.setTime(pod.getMetadata().getCreationTimestamp()
+      .toEpochSecond() * 1000);
     return auditBuilder.build();
   }
 

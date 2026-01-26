@@ -28,10 +28,8 @@ public final class AuditFindService implements Service<AuditFindRequest> {
   ) throws Exception {
     try {
       var pod = getJobPod(auditJob.job());
-      var log = coreV1Api.readNamespacedPodLog(pod.getMetadata().getName(),
-        pod.getMetadata().getNamespace()).execute();
       client.send(requestId, AuditFindResponse.newBuilder()
-        .setSuccess(true).setAudit(auditFactory.fromJson(log)).build());
+        .setSuccess(true).setAudit(auditFactory.fromJson(pod)).build());
     } catch (Exception exception) {
       client.send(requestId, AuditFindResponse.newBuilder()
         .setSuccess(false).build());
