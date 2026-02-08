@@ -2,6 +2,7 @@ package io.poddeck.agent;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.poddeck.agent.app.AppHook;
 import io.poddeck.agent.application.ApplicationLaunchEvent;
 import io.poddeck.agent.application.ApplicationPostRunEvent;
 import io.poddeck.agent.application.ApplicationPreRunEvent;
@@ -59,6 +60,7 @@ public class AgentApplication {
     hookRegistry.register(injector.getInstance(ResourceHook.class));
     hookRegistry.register(injector.getInstance(NamespaceHook.class));
     hookRegistry.register(injector.getInstance(EventHook.class));
+    hookRegistry.register(injector.getInstance(AppHook.class));
     hookRegistry.register(injector.getInstance(PodHook.class));
     hookRegistry.register(injector.getInstance(DeploymentHook.class));
     hookRegistry.register(injector.getInstance(DaemonSetHook.class));

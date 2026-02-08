@@ -18,13 +18,52 @@ spec:
         - name: poddeck-agent
           image: poddeck-agent:latest
           imagePullPolicy: Never
+          env:
+            - name: HELM_REPOSITORY_CACHE
+              value: /helm/cache
+            - name: HELM_REPOSITORY_CONFIG
+              value: /helm/config/repositories.yaml
+          volumeMounts:
+            - name: helm-cache
+              mountPath: /helm/cache
+            - name: helm-config
+              mountPath: /helm/config
           resources:
             requests:
               cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
               memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+      volumes:
+        - name: helm-cache
+          persistentVolumeClaim:
+            claimName: poddeck-helm-cache-pvc
+        - name: helm-config
+          persistentVolumeClaim:
+            claimName: poddeck-helm-config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: poddeck-helm-cache-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: poddeck-helm-config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
 ---
 apiVersion: v1
 kind: Namespace
@@ -371,4 +410,34 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: poddeck-agent-cronjob-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: poddeck-agent-helm-secrets
+rules:
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: poddeck-agent-helm-secrets-binding
+subjects:
+  - kind: ServiceAccount
+    name: poddeck-agent
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: poddeck-agent-helm-secrets
   apiGroup: rbac.authorization.k8s.io

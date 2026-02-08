@@ -47,6 +47,8 @@ dependencies {
   implementation("io.kubernetes:client-java-extended:25.0.0")
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
+
+  implementation("com.marcnuri.helm-java:helm-java:0.0.19")
 }
 
 tasks.test {
