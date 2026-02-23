@@ -5,7 +5,9 @@ import com.google.inject.Singleton;
 import com.marcnuri.helm.Helm;
 import io.poddeck.agent.application.ApplicationLaunchEvent;
 import io.poddeck.agent.communication.service.ServiceRepository;
+import io.poddeck.common.AppInstallRequest;
 import io.poddeck.common.AppListRequest;
+import io.poddeck.common.AppUninstallRequest;
 import io.poddeck.common.event.EventHook;
 import io.poddeck.common.event.Hook;
 import io.poddeck.common.log.Log;
@@ -21,6 +23,8 @@ import java.util.concurrent.CompletableFuture;
 public final class AppHook implements Hook {
   private final ServiceRepository serviceRepository;
   private final AppListService appListService;
+  private final AppInstallService appInstallService;
+  private final AppUninstallService appUninstallService;
   private final Log log;
 
   @EventHook
@@ -28,6 +32,8 @@ public final class AppHook implements Hook {
     initializeHelmConfig();
     updateHelmRepositories();
     serviceRepository.register(AppListRequest.class, appListService);
+    serviceRepository.register(AppInstallRequest.class, appInstallService);
+    serviceRepository.register(AppUninstallRequest.class, appUninstallService);
   }
 
   private static final String DEFAULT_REPOSITORY_CONFIG = """
