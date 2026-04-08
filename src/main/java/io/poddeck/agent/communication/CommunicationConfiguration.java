@@ -13,11 +13,13 @@ public class CommunicationConfiguration implements Configuration {
   private String hostname;
   private int port;
   private String cluster;
+  private String key;
 
   @Override
   public void load(AbstractConfiguration file) {
     hostname = file.getString("communication.hostname");
     port = file.getInt("communication.port");
     cluster = file.getString("communication.cluster");
+    key = file.getString("communication.key");
   }
 }

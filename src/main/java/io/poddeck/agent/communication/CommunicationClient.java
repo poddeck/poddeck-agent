@@ -43,7 +43,7 @@ public final class CommunicationClient {
       stream = stub.connect(TunnelService.create(log, this, serviceRepository));
       var handshake = HandshakeRequest.newBuilder()
         .setCluster(configuration.cluster())
-        .setKey("secret")
+        .setKey(configuration.key())
         .build();
       send(handshake);
     } catch (Exception exception) {
