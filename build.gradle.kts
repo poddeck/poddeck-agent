@@ -48,7 +48,7 @@ dependencies {
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 
-  implementation("com.marcnuri.helm-java:helm-java:0.0.19")
+  implementation("com.marcnuri.helm-java:helm-java:0.0.20")
 }
 
 tasks.test {
