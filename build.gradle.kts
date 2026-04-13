@@ -38,9 +38,9 @@ dependencies {
   implementation("org.apache.commons:commons-configuration2:2.13.0")
   implementation("commons-beanutils:commons-beanutils:1.11.0")
 
-  implementation("io.grpc:grpc-stub:1.79.0")
-  implementation("io.grpc:grpc-protobuf:1.79.0")
-  implementation("io.grpc:grpc-netty:1.79.0")
+  implementation("io.grpc:grpc-stub:1.80.0")
+  implementation("io.grpc:grpc-protobuf:1.80.0")
+  implementation("io.grpc:grpc-netty:1.80.0")
 
   implementation(platform("io.netty:netty-bom:4.1.132.Final"))
   implementation("com.google.protobuf:protobuf-java:4.34.0")
