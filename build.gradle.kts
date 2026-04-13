@@ -45,8 +45,8 @@ dependencies {
   implementation(platform("io.netty:netty-bom:4.1.132.Final"))
   implementation("com.google.protobuf:protobuf-java:4.34.0")
 
-  implementation("io.kubernetes:client-java:25.0.0")
-  implementation("io.kubernetes:client-java-extended:25.0.0")
+  implementation("io.kubernetes:client-java:26.0.0")
+  implementation("io.kubernetes:client-java-extended:26.0.0")
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 
