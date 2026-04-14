@@ -35,7 +35,7 @@ dependencies {
 
   implementation("org.json:json:20251224")
 
-  implementation("org.apache.commons:commons-configuration2:2.13.0")
+  implementation("org.apache.commons:commons-configuration2:2.14.0")
   implementation("commons-beanutils:commons-beanutils:1.11.0")
 
   implementation("io.grpc:grpc-stub:1.79.0")
