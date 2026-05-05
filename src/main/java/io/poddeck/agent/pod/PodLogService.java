@@ -22,6 +22,7 @@ public final class PodLogService implements Service<PodLogRequest> {
     var builder = coreApi
       .readNamespacedPodLog(request.getPod(), request.getNamespace())
       .timestamps(true)
+      .tailLines(10_000)
       .limitBytes(2_000_000);
     if (!request.getContainer().isEmpty()) {
       builder = builder.container(request.getContainer());
