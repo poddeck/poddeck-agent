@@ -38,6 +38,7 @@ public final class CommunicationClient {
         .usePlaintext()
         .enableRetry()
         .maxRetryAttempts(RETRY_ATTEMPTS)
+        .maxInboundMessageSize(16 * 1024 * 1024)
         .build();
       var stub = TunnelServiceGrpc.newStub(channel);
       stream = stub.connect(TunnelService.create(log, this, serviceRepository));
