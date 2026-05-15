@@ -48,6 +48,12 @@ dependencies {
   implementation("io.kubernetes:client-java:26.0.0")
   implementation("io.kubernetes:client-java-extended:26.0.0")
 
+  constraints {
+    implementation("org.bouncycastle:bcprov-jdk18on:1.84")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
+    implementation("org.bouncycastle:bcutil-jdk18on:1.84")
+  }
+
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
 
   implementation("com.marcnuri.helm-java:helm-java:0.0.20")
