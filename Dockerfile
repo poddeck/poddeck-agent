@@ -1,11 +1,12 @@
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:25-jre-alpine
 
 WORKDIR /app
 
 COPY build/libs/agent-*.jar agent.jar
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
-RUN chmod +x /app/docker-entrypoint.sh && \
+RUN apk add --no-cache procps && \
+    chmod +x /app/docker-entrypoint.sh && \
     chown -R 1000:1000 /app
 
 USER 1000
