@@ -33,7 +33,7 @@ dependencies {
   testImplementation("org.projectlombok:lombok:1.18.46")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
-  implementation("org.json:json:20251224")
+  implementation("org.json:json:20260522")
 
   implementation("org.apache.commons:commons-configuration2:2.15.0")
   implementation("commons-beanutils:commons-beanutils:1.11.0")
@@ -42,7 +42,7 @@ dependencies {
   implementation("io.grpc:grpc-protobuf:1.81.0")
   implementation("io.grpc:grpc-netty:1.81.0")
 
-  implementation(platform("io.netty:netty-bom:4.2.13.Final"))
+  implementation(platform("io.netty:netty-bom:4.2.14.Final"))
   implementation("com.google.protobuf:protobuf-java:4.34.1")
 
   implementation("io.kubernetes:client-java:26.0.0")
