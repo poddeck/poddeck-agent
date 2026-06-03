@@ -43,7 +43,7 @@ dependencies {
   implementation("io.grpc:grpc-netty:1.81.0")
 
   implementation(platform("io.netty:netty-bom:4.2.14.Final"))
-  implementation("com.google.protobuf:protobuf-java:4.34.1")
+  implementation("com.google.protobuf:protobuf-java:4.35.0")
 
   implementation("io.kubernetes:client-java:26.0.0")
   implementation("io.kubernetes:client-java-extended:26.0.0")
