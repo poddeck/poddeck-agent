@@ -72,7 +72,7 @@ public final class EventWatcher {
           resourceVersion = null;
         }
       } catch (Exception exception) {
-        exception.printStackTrace();
+        log.processError(exception);
       }
     }
   }
@@ -105,15 +105,18 @@ public final class EventWatcher {
 
 
   private void processEvent(CoreV1Event event) {
+    if (event == null) return;
+    var metadata = event.getMetadata();
+    var involvedObject = event.getInvolvedObject();
     var result = Event.newBuilder()
-      .setName(event.getMetadata().getName() != null ?
-        event.getMetadata().getName() : "")
-      .setNamespace(event.getMetadata().getNamespace() != null ?
-        event.getMetadata().getNamespace() : "")
-      .setInvolvedObjectKind(event.getInvolvedObject().getKind() != null ?
-        event.getInvolvedObject().getKind() : "")
-      .setInvolvedObjectName(event.getInvolvedObject().getName() != null ?
-        event.getInvolvedObject().getName() : "")
+      .setName(metadata != null && metadata.getName() != null ?
+        metadata.getName() : "")
+      .setNamespace(metadata != null && metadata.getNamespace() != null ?
+        metadata.getNamespace() : "")
+      .setInvolvedObjectKind(involvedObject != null && involvedObject.getKind() != null ?
+        involvedObject.getKind() : "")
+      .setInvolvedObjectName(involvedObject != null && involvedObject.getName() != null ?
+        involvedObject.getName() : "")
       .setReason(event.getReason() != null ? event.getReason() : "")
       .setMessage(event.getMessage() != null ? event.getMessage() : "")
       .setType(event.getType() != null ? event.getType() : "")
