@@ -6,6 +6,7 @@ COPY build/libs/agent-*.jar agent.jar
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
 RUN apk add --no-cache procps && \
+    apk upgrade --no-cache libcrypto3 libssl3 openssl && \
     chmod +x /app/docker-entrypoint.sh && \
     chown -R 1000:1000 /app
 
