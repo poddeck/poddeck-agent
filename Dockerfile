@@ -5,8 +5,9 @@ WORKDIR /app
 COPY build/libs/agent-*.jar agent.jar
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
+# Upgrade libexpat to patch CVE-2026-45186 (fixed in 2.8.1-r0).
 RUN apk add --no-cache procps && \
-    apk upgrade --no-cache libcrypto3 libssl3 openssl && \
+    apk upgrade --no-cache libcrypto3 libssl3 openssl libexpat && \
     chmod +x /app/docker-entrypoint.sh && \
     chown -R 1000:1000 /app
 
