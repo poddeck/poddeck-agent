@@ -55,7 +55,7 @@ dependencies {
 
     // Patch transitive jackson-databind 2.21.3 (via client-java) for
     // CVE-2026-54512/-54513 (PolymorphicTypeValidator bypasses, fixed in 2.21.4).
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.0")
   }
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
