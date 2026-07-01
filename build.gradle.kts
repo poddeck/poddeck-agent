@@ -45,8 +45,8 @@ dependencies {
   implementation(platform("io.netty:netty-bom:4.2.15.Final"))
   implementation("com.google.protobuf:protobuf-java:4.35.1")
 
-  implementation("io.kubernetes:client-java:26.0.0")
-  implementation("io.kubernetes:client-java-extended:26.0.0")
+  implementation("io.kubernetes:client-java:26.0.1")
+  implementation("io.kubernetes:client-java-extended:26.0.1")
 
   constraints {
     implementation("org.bouncycastle:bcprov-jdk18on:1.84")
