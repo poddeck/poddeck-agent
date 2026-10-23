@@ -26,14 +26,14 @@ dependencies {
 
   implementation("com.google.inject:guice:7.0.0")
 
-  implementation("com.google.guava:guava:33.6.0-jre")
+  implementation("com.google.guava:guava:33.7.2-jre")
 
   implementation("org.projectlombok:lombok:1.18.46")
   annotationProcessor("org.projectlombok:lombok:1.18.46")
   testImplementation("org.projectlombok:lombok:1.18.46")
   testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
-  implementation("org.json:json:20260719")
+  implementation("org.json:json:20260814")
 
   implementation("org.apache.commons:commons-configuration2:2.15.1")
   implementation("commons-beanutils:commons-beanutils:1.11.0")
@@ -42,20 +42,25 @@ dependencies {
   implementation("io.grpc:grpc-protobuf:1.83.1")
   implementation("io.grpc:grpc-netty:1.83.1")
 
-  implementation(platform("io.netty:netty-bom:4.2.16.Final"))
-  implementation("com.google.protobuf:protobuf-java:4.35.1")
+  implementation(platform("io.netty:netty-bom:4.2.18.Final"))
+  implementation("com.google.protobuf:protobuf-java:4.36.2")
 
   implementation("io.kubernetes:client-java:27.0.0")
   implementation("io.kubernetes:client-java-extended:27.0.0")
 
   constraints {
-    implementation("org.bouncycastle:bcprov-jdk18on:1.85")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.85.2")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.85")
     implementation("org.bouncycastle:bcutil-jdk18on:1.85")
 
     // Patch transitive jackson-databind 2.21.3 (via client-java) for
     // CVE-2026-54512/-54513 (PolymorphicTypeValidator bypasses, fixed in 2.21.4).
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
+
+    // Patch transitive httpcore5-h2 5.4 (via client-java) for
+    // CVE-2026-54428 (HPACK header DoS, fixed in 5.4.3).
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.4.4")
+    implementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
   }
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
