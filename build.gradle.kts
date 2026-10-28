@@ -55,7 +55,7 @@ dependencies {
 
     // Patch transitive jackson-databind 2.21.3 (via client-java) for
     // CVE-2026-54512/-54513 (PolymorphicTypeValidator bypasses, fixed in 2.21.4).
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.4")
 
     // Patch transitive httpcore5-h2 5.4 (via client-java) for
     // CVE-2026-54428 (HPACK header DoS, fixed in 5.4.3).
