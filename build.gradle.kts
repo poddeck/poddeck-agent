@@ -61,6 +61,10 @@ dependencies {
     // CVE-2026-54428 (HPACK header DoS, fixed in 5.4.3).
     implementation("org.apache.httpcomponents.core5:httpcore5:5.4.4")
     implementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
+
+    // Patch transitive httpclient5 (via client-java) for connection leak
+    // on Content-Encoding decode error / pool exhaustion DoS (fixed in 5.6.3).
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.6.3")
   }
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
