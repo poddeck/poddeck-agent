@@ -64,7 +64,7 @@ dependencies {
 
     // Patch transitive httpclient5 (via client-java) for connection leak
     // on Content-Encoding decode error / pool exhaustion DoS (fixed in 5.6.3).
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.6.3")
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.6.5")
   }
 
   implementation("io.poddeck:common:1.0.0-SNAPSHOT")
