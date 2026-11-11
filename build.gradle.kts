@@ -46,7 +46,7 @@ dependencies {
   implementation("com.google.protobuf:protobuf-java:4.36.2")
 
   implementation("io.kubernetes:client-java:28.0.0")
-  implementation("io.kubernetes:client-java-extended:27.0.0")
+  implementation("io.kubernetes:client-java-extended:28.0.0")
 
   constraints {
     implementation("org.bouncycastle:bcprov-jdk18on:1.86")
