@@ -1,6 +1,6 @@
 plugins {
   id("java")
-  id("io.freefair.lombok") version "9.5.0"
+  id("io.freefair.lombok") version "9.8.3"
 }
 
 group = "io.poddeck"
