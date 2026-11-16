@@ -49,7 +49,7 @@ dependencies {
   implementation("io.kubernetes:client-java-extended:28.0.0")
 
   constraints {
-    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.87")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
     implementation("org.bouncycastle:bcutil-jdk18on:1.86")
 
