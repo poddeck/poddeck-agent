@@ -50,7 +50,7 @@ dependencies {
 
   constraints {
     implementation("org.bouncycastle:bcprov-jdk18on:1.87")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.87")
     implementation("org.bouncycastle:bcutil-jdk18on:1.86")
 
     // Patch transitive jackson-databind 2.21.3 (via client-java) for
