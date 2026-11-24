@@ -59,7 +59,7 @@ dependencies {
 
     // Patch transitive httpcore5-h2 5.4 (via client-java) for
     // CVE-2026-54428 (HPACK header DoS, fixed in 5.4.3).
-    implementation("org.apache.httpcomponents.core5:httpcore5:5.4.4")
+    implementation("org.apache.httpcomponents.core5:httpcore5:5.5")
     implementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.4")
 
     // Patch transitive httpclient5 (via client-java) for connection leak
